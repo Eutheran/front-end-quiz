@@ -15,6 +15,7 @@ const getItems = function(payload) {
 };
 
 browseRouter.get('', (req, res) => {
+  console.log(req.query);
   const response = getItems(req.query);
   res.status(200).json(response);
 });

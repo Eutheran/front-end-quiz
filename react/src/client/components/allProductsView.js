@@ -5,23 +5,44 @@ export default class AllProductsView extends Component {
   constructor() {
     super();
     this.state = {
-      items: null,
-      displayCount: 0,
+      items: [],
+      itemsDisplayed: 0,
+      totalItems: 0,
     };
   }
 
   componentDidMount() {
     fetch('/browse')
-      .then(res => {
-        return res.json();
-      })
+      .then(res => res.json())
       .then(items => {
-        this.setState({ ...items, displayCount: items.length });
+        this.setState({
+          ...items,
+          totalItems: items.totalItems,
+          itemsDisplayed: this.state.itemsDisplayed + items.items.length,
+        });
       })
-      .catch(err => {
-        console.error('Error is:', err);
-      });
+      .catch(err => console.error('Error is:', err));
   }
+
+  loadMore = () => {
+    let { itemsDisplayed, totalItems } = this.state;
+    const itemsLeft = totalItems - itemsDisplayed;
+    let start = itemsDisplayed;
+    let limit = 9;
+
+    if (itemsDisplayed < totalItems) {
+      if (itemsLeft < 9) limit = itemsLeft;
+      fetch(`/browse?start=${start}&limit=${limit}`)
+        .then(res => res.json())
+        .then(newItems => {
+          this.setState({
+            items: [...this.state.items, ...newItems.items],
+            itemsDisplayed: itemsDisplayed + newItems.items.length,
+          });
+        })
+        .catch(err => console.error('Error is:', err));
+    }
+  };
 
   render() {
     return (
@@ -49,7 +70,11 @@ export default class AllProductsView extends Component {
                 </div>
               );
             })}
-            <button>Load More</button>
+            {this.state.itemsDisplayed === this.state.totalItems ? (
+              ''
+            ) : (
+              <button onClick={this.loadMore}>Load More</button>
+            )}
           </div>
         ) : (
           <div className="empty">
