@@ -5,13 +5,14 @@ export default class AllProductsView extends Component {
   constructor() {
     super();
     this.state = {
-      items: [],
+      items: null,
       itemsDisplayed: 0,
       totalItems: 0,
     };
   }
 
   componentDidMount() {
+    //loads initial items
     fetch('/browse')
       .then(res => res.json())
       .then(items => {
@@ -24,19 +25,23 @@ export default class AllProductsView extends Component {
       .catch(err => console.error('Error is:', err));
   }
 
-  loadMore = () => {
-    let { itemsDisplayed, totalItems } = this.state;
+  loadMoreItems = () => {
+    const { itemsDisplayed, totalItems } = this.state;
     const itemsLeft = totalItems - itemsDisplayed;
-    let start = itemsDisplayed;
-    let limit = 9;
+    let url = `/browse?start=${itemsDisplayed}`;
 
-    if (itemsDisplayed < totalItems) {
-      if (itemsLeft < 9) limit = itemsLeft;
-      fetch(`/browse?start=${start}&limit=${limit}`)
+    if (itemsLeft > 0) {
+      //we will fetch
+      if (itemsLeft < 9) {
+        //add a limit to req.query
+        url = url + `&limit=${itemsLeft}`;
+      }
+      fetch(url)
         .then(res => res.json())
         .then(newItems => {
           this.setState({
             items: [...this.state.items, ...newItems.items],
+            totalItems: newItems.totalItems,
             itemsDisplayed: itemsDisplayed + newItems.items.length,
           });
         })
@@ -52,7 +57,7 @@ export default class AllProductsView extends Component {
           <div className="items">
             {this.state.items.map(item => {
               return (
-                <div className="item" key={item.id}>
+                <div className="all-view-item" key={item.id}>
                   <Link to={`/browse/item/${item.id}`}>
                     <img alt={item.title} src={item.image} />
                   </Link>
@@ -73,7 +78,7 @@ export default class AllProductsView extends Component {
             {this.state.itemsDisplayed === this.state.totalItems ? (
               ''
             ) : (
-              <button onClick={this.loadMore}>Load More</button>
+              <button onClick={this.loadMoreItems}>Load More</button>
             )}
           </div>
         ) : (
