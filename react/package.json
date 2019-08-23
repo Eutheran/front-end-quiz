@@ -29,8 +29,11 @@
     "homepage": "https://github.com/1stdibs/front-end-quiz#readme",
     "dependencies": {
         "express": "^4.16.3",
+        "materialize": "^1.0.0",
+        "materialize-css": "^1.0.0-rc.2",
         "react": "^16.8.6",
         "react-dom": "^16.8.6",
+        "react-router-dom": "^5.0.1",
         "react-scripts": "1.1.4"
     },
     "devDependencies": {

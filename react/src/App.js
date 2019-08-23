@@ -1,10 +1,13 @@
 import React, { Component } from 'react';
 import './App.css';
+import Routes from './client/routes';
 
 class App extends Component {
   render() {
     return (
-      <h1 className="App-welcome">Welcome!</h1>
+      <div id="entire-app">
+        <Routes />
+      </div>
     );
   }
 }
